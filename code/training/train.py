@@ -23,7 +23,8 @@ run = Run.get_submitted_run()
 
 print("Running train.py")
 
-df = pd.read_csv('./data/Data_Scientist_Interview_Task.csv')
+print("Load Data")
+df = run.input_datasets['training_data'].to_pandas_dataframe()
 
 ###### Data Cleaning ######
 
@@ -59,6 +60,11 @@ data_pool = Pool(
     feature_names = feature_names,
     cat_features = cat_features
 )
+
+params = {"objective": "Tweedie:variance_power=1.99",
+          "iterations": 1000,
+          "random_seed": 69,
+          "verbose": False}
 
 scores = cv(pool = data_pool,
             params = params,

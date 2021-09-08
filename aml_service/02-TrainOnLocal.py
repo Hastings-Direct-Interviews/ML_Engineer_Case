@@ -2,6 +2,7 @@ from azureml.core.runconfig import RunConfiguration
 from azureml.core import Workspace
 from azureml.core import Experiment
 from azureml.core import ScriptRunConfig
+from azureml.core import Dataset
 import json
 from azureml.core.authentication import AzureCliAuthentication
 cli_auth = AzureCliAuthentication()
@@ -18,10 +19,15 @@ print(exp.name, exp.workspace.name, sep="\n")
 run_config_user_managed = RunConfiguration()
 run_config_user_managed.environment.python.user_managed_dependencies = True
 
+# Get training data
+fnol_ds = ws.datasets.get("fnol dataset")
+
+
 print("Submitting an experiment.")
 src = ScriptRunConfig(
     source_directory="./code",
     script="training/train.py",
+    arguments = ['--input-data', fnol_ds.as_named_input('training_data')], # Reference to dataset
     run_config=run_config_user_managed,
 )
 run = exp.submit(src)
