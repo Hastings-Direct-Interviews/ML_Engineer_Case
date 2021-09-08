@@ -1,6 +1,6 @@
 {
     "subscription_id": "a9c11386-cffe-426a-a0f4-22615b5350c1",
-    "resource_group": "FNOL_rg",
-    "workspace_name": "FNOL_ws1",
+    "resource_group": "Hastings-Task-RG",
+    "workspace_name": "Hastings-Task-WS",
     "location": "uksouth"
 }
