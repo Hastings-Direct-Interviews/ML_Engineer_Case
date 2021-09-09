@@ -18,7 +18,12 @@ default_ds = ws.get_default_datastore()
 
 print(default_ds)
 
-tab_data_set = Dataset.Tabular.from_delimited_files(path=(default_ds, './data/Data_Scientist_Interview_Task.csv'))
+default_ds.upload_files(files=['./data/Data_Scientist_Interview_Task.csv'], # Upload the diabetes csv files in /data
+                       target_path='fnol-data/', # Put it in a folder path in the datastore
+                       overwrite=True, # Replace existing files of the same name
+                       show_progress=True)
+
+tab_data_set = Dataset.Tabular.from_delimited_files(path=(default_ds, 'fnol-data/Data_Scientist_Interview_Task.csv'))
 
 # Register the tabular dataset
 try:
