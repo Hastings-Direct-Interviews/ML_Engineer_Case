@@ -91,6 +91,26 @@ print(
     )
 )
 
+model_name_4 = "model_meta_data.json"
+run.download_file(
+    name="./outputs/" + model_name_4, output_file_path="./model/" + model_name_4
+)
+print("Downloaded model {} to Project root directory".format(model_name_4))
+os.chdir("./model")
+model_4 = Model.register(
+    model_path=model_name_4,  # this points to a local file
+    model_name=model_name_4,  # this is the name the model is registered as
+    tags={"area": "FNOL", "type": "regression", "run_id": run_id},
+    description="Meta data for FNOL model",
+    workspace=ws,
+)
+os.chdir("..")
+print(
+    "Model registered: {} \nModel Description: {} \nModel Version: {}".format(
+        model_4.name, model_4.description, model_4.version
+    )
+)
+
 # Remove the evaluate.json as we no longer need it
 # os.remove("aml_config/evaluate.json")
 
@@ -102,6 +122,8 @@ model_json["ll_prop_model_name"] = model_2.name
 model_json["ll_prop_model_version"] = model_2.version
 model_json["ll_sev_model_name"] = model_3.name
 model_json["ll_sev_model_version"] = model_3.version
+model_json["meta_data_model_name"] = model_4.name
+model_json["meta_data_model_version"] = model_4.version
 model_json["run_id"] = run_id
 with open("aml_config/model.json", "w") as outfile:
     json.dump(model_json, outfile)

@@ -40,6 +40,22 @@ df_att = df.drop(columns=['Incurred'])
 feature_names = list(df_att.drop(columns=['Capped Incurred']))
 cat_features = df_att.drop(columns=['Capped Incurred']).select_dtypes(include=['object']).columns.tolist()
 
+# save model meta data
+model_meta_data_json = {}
+model_meta_data_json["feature_names"] = feature_names
+model_meta_data_json["cat_features"] = cat_features
+
+model_name = "model_meta_data.json"
+
+with open(model_name, "w") as outfile:
+    json.dump(model_meta_data_json, outfile)
+
+# upload the model file explicitly into artifacts
+run.upload_file(name="./outputs/" + model_name, path_or_stream=model_name)
+print("Uploaded the model {} to experiment {}".format(model_name, run.experiment.name))
+dirpath = os.getcwd()
+print(dirpath)
+
 data_pool = Pool(
     data = df_att.drop(columns=['Capped Incurred']),
     label = df_att['Capped Incurred'],
