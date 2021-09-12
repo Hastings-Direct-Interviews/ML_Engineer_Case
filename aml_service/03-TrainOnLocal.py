@@ -11,7 +11,7 @@ cli_auth = AzureCliAuthentication()
 ws = Workspace.from_config(auth=cli_auth)
 
 # Attach Experiment
-experiment_name = "fnol_model"
+experiment_name = "fnol_model_2"
 exp = Experiment(workspace=ws, name=experiment_name)
 print(exp.name, exp.workspace.name, sep="\n")
 
@@ -45,8 +45,11 @@ if run.get_status() == "Failed":
 
 # Writing the run id to /aml_config/run_id.json
 
+print("Saving Experiment Details")
 run_id = {}
 run_id["run_id"] = run.id
 run_id["experiment_name"] = run.experiment.name
 with open("aml_config/run_id.json", "w") as outfile:
     json.dump(run_id, outfile)
+
+print(run_id)

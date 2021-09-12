@@ -32,24 +32,62 @@ print("Run ID for last run: {}".format(run_id))
 model_local_dir = "model"
 os.makedirs(model_local_dir, exist_ok=True)
 
-# Download Model to Project root directory
-model_name = "FNOL_regression_model.pkl"
+# Download Models to Project root directory
+model_name_1 = "fnol_attritional_model.cbm"
 run.download_file(
-    name="./outputs/" + model_name, output_file_path="./model/" + model_name
+    name="./outputs/" + model_name_1, output_file_path="./model/" + model_name_1
 )
-print("Downloaded model {} to Project root directory".format(model_name))
+print("Downloaded model {} to Project root directory".format(model_name_1))
 os.chdir("./model")
-model = Model.register(
-    model_path=model_name,  # this points to a local file
-    model_name=model_name,  # this is the name the model is registered as
+model_1 = Model.register(
+    model_path=model_name_1,  # this points to a local file
+    model_name=model_name_1,  # this is the name the model is registered as
     tags={"area": "FNOL", "type": "regression", "run_id": run_id},
-    description="Regression model for FNOL",
+    description="Attritional claims model for FNOL",
     workspace=ws,
 )
 os.chdir("..")
 print(
     "Model registered: {} \nModel Description: {} \nModel Version: {}".format(
-        model.name, model.description, model.version
+        model_1.name, model_1.description, model_1.version
+    )
+)
+model_name_2 = "fnol_large_claim_propensity_model.cbm"
+run.download_file(
+    name="./outputs/" + model_name_2, output_file_path="./model/" + model_name_2
+)
+print("Downloaded model {} to Project root directory".format(model_name_2))
+os.chdir("./model")
+model_2 = Model.register(
+    model_path=model_name_2,  # this points to a local file
+    model_name=model_name_2,  # this is the name the model is registered as
+    tags={"area": "FNOL", "type": "regression", "run_id": run_id},
+    description="Large claims propensity model for FNOL",
+    workspace=ws,
+)
+os.chdir("..")
+print(
+    "Model registered: {} \nModel Description: {} \nModel Version: {}".format(
+        model_2.name, model_2.description, model_2.version
+    )
+)
+model_name_3 = "large_severity.json"
+run.download_file(
+    name="./outputs/" + model_name_3, output_file_path="./model/" + model_name_3
+)
+print("Downloaded model {} to Project root directory".format(model_name_3))
+os.chdir("./model")
+model_3 = Model.register(
+    model_path=model_name_3,  # this points to a local file
+    model_name=model_name_3,  # this is the name the model is registered as
+    tags={"area": "FNOL", "type": "regression", "run_id": run_id},
+    description="Large claims severity model for FNOL",
+    workspace=ws,
+)
+os.chdir("..")
+print(
+    "Model registered: {} \nModel Description: {} \nModel Version: {}".format(
+        model_3.name, model_3.description, model_3.version
     )
 )
 
@@ -58,8 +96,14 @@ print(
 
 # Writing the registered model details to /aml_config/model.json
 model_json = {}
-model_json["model_name"] = model.name
-model_json["model_version"] = model.version
+model_json["attritional_model_name"] = model_1.name
+model_json["attritional_model_version"] = model_1.version
+model_json["ll_prop_model_name"] = model_2.name
+model_json["ll_prop_model_version"] = model_2.version
+model_json["ll_sev_model_name"] = model_3.name
+model_json["ll_sev_model_version"] = model_3.version
 model_json["run_id"] = run_id
 with open("aml_config/model.json", "w") as outfile:
     json.dump(model_json, outfile)
+
+print(model_json)

@@ -10,17 +10,18 @@ cli_auth = AzureCliAuthentication()
 # Get workspace
 ws = Workspace.from_config(auth=cli_auth)
 
-# Paramaterize the metrics on which the models should be compared
-
-# Add golden data set on which all the model performance can be evaluated
-
 # Get the latest run_id
 with open("aml_config/run_id.json") as f:
     config = json.load(f)
 
+print("Print config")
+print(config)
+
 new_model_run_id = config["run_id"]
 experiment_name = config["experiment_name"]
 exp = Experiment(workspace=ws, name=experiment_name)
+
+print("New model run id:{}".format(new_model_run_id))
 
 
 try:
@@ -32,6 +33,12 @@ try:
             model_list,
         )
     )
+
+    print("Model List")
+    print(model_list)
+
+
+
     production_model_run_id = production_model.tags.get("run_id")
     run_list = exp.get_runs()
     # production_model_run = next(filter(lambda x: x.id == production_model_run_id, run_list))
@@ -40,16 +47,16 @@ try:
     production_model_run = Run(exp, run_id=production_model_run_id)
     new_model_run = Run(exp, run_id=new_model_run_id)
 
-    production_model_mse = production_model_run.get_metrics().get("mse")
-    new_model_mse = new_model_run.get_metrics().get("mse")
+    production_model_mae = production_model_run.get_metrics().get("mae")
+    new_model_mae = new_model_run.get_metrics().get("mae")
     print(
-        "Current Production model mse: {}, New trained model mse: {}".format(
-            production_model_mse, new_model_mse
+        "Current Production model mae: {}, New trained model mae: {}".format(
+            production_model_mae, new_model_mae
         )
     )
 
     promote_new_model = False
-    if new_model_mse < production_model_mse:
+    if new_model_mae < production_model_mae:
         promote_new_model = True
         print("New trained model performs better, thus it will be registered")
 except:
@@ -65,3 +72,6 @@ if promote_new_model:
 run_id["experiment_name"] = experiment_name
 with open("aml_config/run_id.json", "w") as outfile:
     json.dump(run_id, outfile)
+
+
+print(run_id)

@@ -1,21 +1,7 @@
-# import pickle
-# from azureml.core import Workspace
-
-# import os
-# from sklearn.datasets import load_diabetes
-# from sklearn.linear_model import Ridge
-# from sklearn.metrics import mean_squared_error
-# from sklearn.model_selection import train_test_split
-# from sklearn.externals import joblib
-# import numpy as np
-# import json
-# import subprocess
-# from typing import Tuple, List
-
-
 from azureml.core.run import Run
 import pandas as pd
-from catboost import CatBoostRegressor, Pool, cv
+import numpy as np
+from catboost import CatBoostRegressor, CatBoostClassifier, Pool, cv
 from sklearn.metrics import mean_absolute_error, log_loss
 
 
@@ -88,7 +74,7 @@ att_model.fit(data_pool)
 
 att_model_preds = att_model.predict(data_pool)
 
-run.log("mae", mean_absolute_error(att_model_preds, df_att['Capped Incurred']))
+run.log("mae_att_mode", mean_absolute_error(att_model_preds, df_att['Capped Incurred']))
 
 # save the model
 model_name = "fnol_attritional_model.cbm"
@@ -151,7 +137,7 @@ large_model_preds = large_model.predict_proba(data_pool)[:, 1]
 
 logloss = log_loss(df_large['Large_Prop'], large_model_preds)
 
-run.log("logloss", log_loss(df_large['Large_Prop'], large_model_preds))
+run.log("logloss_ll_prop_model", log_loss(df_large['Large_Prop'], large_model_preds))
 
 # save the model
 model_name = "fnol_large_claim_propensity_model.cbm"
@@ -174,6 +160,28 @@ df['Large_Incurred'] = df['Incurred'] - df['Capped Incurred']
 
 # Calculate large claim severity
 large_severity = df[df['Large_Prop']==1]['Large_Incurred'].mean()
+
+large_severity_json = {}
+large_severity_json["large_severity"] = large_severity
+with open("large_severity.json", "w") as outfile:
+    json.dump(large_severity_json, outfile)
+
+model_name = "large_severity.json"
+
+# upload the model file explicitly into artifacts
+run.upload_file(name="./outputs/" + model_name, path_or_stream=model_name)
+print("Uploaded the model {} to experiment {}".format(model_name, run.experiment.name))
+dirpath = os.getcwd()
+print(dirpath)
+
+###### Overall Model Performance ######
+
+print("Assess Overall Model Performance")
+
+df['FNOL_Prediction'] = att_model_preds + (large_model_preds * large_severity)
+
+run.log("mae", mean_absolute_error(df['FNOL_Prediction'], df_att['Capped Incurred']))
+
 
 print("Following files are uploaded ")
 print(run.get_file_names())
