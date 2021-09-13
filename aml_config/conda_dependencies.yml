@@ -39,12 +39,16 @@ dependencies:
   # get a prebuilt version and not require build tools for the install.
 
 - psutil=5.3
+- pip
 
 - pip:
     # Required packages for AzureML execution, history, and data preparation.
-  - azureml-sdk[notebooks]
+  #- azure-cli==2.2.0
+  #- azureml-sdk[notebooks]
+  #- azureml-sdk[cli]
   - catboost==0.26.1
-  - andas==1.3.2
+  - pandas==1.3.2
   - numpy==1.21.2
   - scikit-learn==0.24.2
+  - azureml-defaults
  

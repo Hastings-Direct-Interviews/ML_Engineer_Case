@@ -1,14 +1,18 @@
 import json
+import numpy as np
 from azureml.core.model import Model
 from catboost import CatBoostRegressor, CatBoostClassifier, Pool
 
 
 def init():
+    print("Start Initiation")
     global att_model
     global large_model
     global large_severity
     global feature_names
     global cat_features
+
+    print("Load Models")
 
     att_model_path = Model.get_model_path(model_name="fnol_attritional_model.cbm")
     large_model_path = Model.get_model_path(model_name="fnol_large_claim_propensity_model.cbm")
@@ -36,7 +40,7 @@ def init():
 def run(raw_data):
     try:
         data = json.loads(raw_data)["data"]
-        data = numpy.array(data)
+        data = np.array(data)
 
         pred_pool = Pool(
             data = data,
@@ -44,8 +48,8 @@ def run(raw_data):
             cat_features = cat_features
         )
 
-        att_model_preds = att_model.predict(data_pool)
-        large_model_preds = large_model.predict_proba(data_pool)[:, 1]
+        att_model_preds = att_model.predict(pred_pool)
+        large_model_preds = large_model.predict_proba(pred_pool)[:, 1]
         result = att_model_preds + (large_model_preds * large_severity)
 
         return json.dumps({"result": result.tolist()})

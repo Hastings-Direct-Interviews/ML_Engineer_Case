@@ -5,13 +5,13 @@
 # from azureml.core.webservice import Webservice
 
 
-import json
+import json, datetime, sys
 from azureml.core import Workspace
 from azureml.core.model import Model
 from azureml.core.webservice import AciWebservice
 from azureml.core.authentication import AzureCliAuthentication
-from azure.core import Environment
-from azure.core.environment import CondaDependecies
+from azureml.core import Environment
+from azureml.core.environment import CondaDependencies
 from azureml.core.model import InferenceConfig
 
 
@@ -27,20 +27,30 @@ except:
     # raise Exception('No new model to register as production model perform better')
     sys.exit(0)
 
+att_model = ws.models["fnol_attritional_model.cbm"]
+large_model = ws.models["fnol_large_claim_propensity_model.cbm"]
+large_severity = ws.models["large_severity.json"]
+model_meta_data = ws.models["model_meta_data.json"]
+
+
 # Create an environment
 print("Creating Environment")
 conda_dependencies_file_path = "aml_config/conda_dependencies.yml"
 
-fnol_env_name = "fnol-env"
-fnolenv = Environment.get(worksapce=ws, name='AzureML-Minimail').clone(fnol_env_name)
-conda_dep = CondaDependecies(conda_dependencies_file_path)
-fnolenv.python.conda_dependencies=conda_dep
+# fnol_env_name = "fnol-env"
+# #fnolenv = Environment.get(workspace=ws, name='AzureML-Minimail').clone(fnol_env_name)
+# fnolenv = Environment(name = fnol_env_name)
+# conda_dep = CondaDependencies(conda_dependencies_file_path)
+# fnolenv.python.conda_dependencies=conda_dep
 
 # Combining scoring script and environment
 print("Combining scoring script and environment")
 inference_config = InferenceConfig(entry_script='code/scoring/score.py',
-                                    source_directory='.',
-                                    environment=fnolenv)
+#                                    source_directory='.',
+#                                    environment=fnolenv,
+                                    conda_file=conda_dependencies_file_path
+                                    
+                                    )
 
 
 # Define deployment configuration
@@ -48,9 +58,9 @@ print("Define deployment configuration")
 
 aci_config = AciWebservice.deploy_configuration(
     cpu_cores=1,
-    memory_gb=1,
-    tags={"area": "fnol", "type": "regression"},
-    description="fnol model",
+    memory_gb=1
+#    tags={"area": "fnol", "type": "regression"},
+#    description="fnol model",
 )
 
 # Deploy the model
@@ -60,11 +70,12 @@ aci_service_name = "aciwebservice" + datetime.datetime.now().strftime("%m%d%H")
 
 service = Model.deploy(workspace=ws,
                         name=aci_service_name,
-                        models=[att_model, large_model, large_severity, feature_names, cat_features],
+                        models=[att_model, large_model, large_severity, model_meta_data],
+#                        models=[],                        
                         inference_config=inference_config,
                         deployment_config=aci_config                       
                         )
-
+print("Wait for deployment")
 service.wait_for_deployment(show_output=True)
 
 print(
