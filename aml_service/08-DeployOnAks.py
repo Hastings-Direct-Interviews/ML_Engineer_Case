@@ -57,7 +57,7 @@ try:
 except:
     cluster_name = "aks" + datetime.datetime.now().strftime("%m%d%H")
     aks_service_name = "akswebservice" + datetime.datetime.now().strftime("%m%d%H")
-    compute_config = AksCompute.provisioning_configuration(location="uksouth", agent_count=6, vm_size="Standard_F4")
+    compute_config = AksCompute.provisioning_configuration(location="uksouth", vm_size="Standard_D2s_v3")
     print(
         "No AKS found in aks_webservice.json. Creating new Aks: {} and AKS Webservice: {}".format(
             cluster_name, aks_service_name
