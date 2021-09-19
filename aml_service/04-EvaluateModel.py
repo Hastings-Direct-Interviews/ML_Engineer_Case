@@ -37,11 +37,8 @@ try:
     print("Model List")
     print(model_list)
 
-
-
     production_model_run_id = production_model.tags.get("run_id")
     run_list = exp.get_runs()
-    # production_model_run = next(filter(lambda x: x.id == production_model_run_id, run_list))
 
     # Get the run history for both production model and newly trained model and compare mse
     production_model_run = Run(exp, run_id=production_model_run_id)

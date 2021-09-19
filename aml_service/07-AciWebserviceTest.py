@@ -1,11 +1,6 @@
-# import numpy
 import json, sys
-# from operator import attrgetter
 from azureml.core import Workspace
-# from azureml.core.model import Model
-# from azureml.core.image import Image
 from azureml.core.webservice import Webservice
-# from azureml.core.webservice import AciWebservice
 from azureml.core.authentication import AzureCliAuthentication
 
 cli_auth = AzureCliAuthentication()
@@ -17,7 +12,6 @@ try:
         config = json.load(f)
 except:
     print("No new model, thus no deployment on ACI")
-    # raise Exception('No new model to register as production model perform better')
     sys.exit(0)
 
 service_name = config["aci_name"]

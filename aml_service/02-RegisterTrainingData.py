@@ -1,11 +1,6 @@
-#import os, json, sys
 from azureml.core import Workspace
 from azureml.core import Dataset
 
-
-#from azureml.core import Run
-#rom azureml.core import Experiment
-#from azureml.core.model import Model
 
 #from azureml.core.runconfig import RunConfiguration
 from azureml.core.authentication import AzureCliAuthentication

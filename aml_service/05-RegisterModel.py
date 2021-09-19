@@ -111,9 +111,6 @@ print(
     )
 )
 
-# Remove the evaluate.json as we no longer need it
-# os.remove("aml_config/evaluate.json")
-
 # Writing the registered model details to /aml_config/model.json
 model_json = {}
 model_json["attritional_model_name"] = model_1.name

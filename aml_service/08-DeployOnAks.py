@@ -21,20 +21,26 @@ except:
     # raise Exception('No new model to register as production model perform better')
     sys.exit(0)
 
+att_model = ws.models["fnol_attritional_model.cbm"]
+large_model = ws.models["fnol_large_claim_propensity_model.cbm"]
+large_severity = ws.models["large_severity.json"]
+model_meta_data = ws.models["model_meta_data.json"]
+
 # Create an environment
 print("Creating Environment")
 conda_dependencies_file_path = "aml_config/conda_dependencies.yml"
 
-fnol_env_name = "fnol-env"
-fnolenv = Environment.get(workspace=ws, name='AzureML-Minimail').clone(fnol_env_name)
-conda_dep = CondaDependecies(conda_dependencies_file_path)
-fnolenv.python.conda_dependencies=conda_dep
+# fnol_env_name = "fnol-env"
+# fnolenv = Environment.get(workspace=ws, name='AzureML-Minimail').clone(fnol_env_name)
+# conda_dep = CondaDependecies(conda_dependencies_file_path)
+# fnolenv.python.conda_dependencies=conda_dep
 
 # Combining scoring script and environment
 print("Combining scoring script and environment")
-inference_config = InferenceConfig(entry_script='code/scoring/score.py',
-                                    source_directory='.',
-                                    environment=fnolenv)
+inference_config = InferenceConfig(runtime= "python",
+                                    entry_script='code/scoring/score.py',
+                                    conda_file=conda_dependencies_file_path
+                                    )
 
 # Create a production cluster for the AKS service
 print("Creating a production cluster for the AKS service")
@@ -51,7 +57,7 @@ try:
 except:
     cluster_name = "aks" + datetime.datetime.now().strftime("%m%d%H")
     aks_service_name = "akswebservice" + datetime.datetime.now().strftime("%m%d%H")
-    compute_config = AksCompute.provisioning_configuration(location="eastus")
+    compute_config = AksCompute.provisioning_configuration(location="uksouth", vm_size='STANDARD_DS11_V2')
     print(
         "No AKS found in aks_webservice.json. Creating new Aks: {} and AKS Webservice: {}".format(
             cluster_name, aks_service_name
@@ -72,8 +78,8 @@ print("Define deployment configuration")
 aks_config = AksWebservice.deploy_configuration(
     cpu_cores=1,
     memory_gb=1,
-    tags={"area": "fnol", "type": "regression"},
-    description="fnol model",
+    # tags={"area": "fnol", "type": "regression"},
+    # description="fnol model",
 )
 
 # Deploy the model
@@ -81,7 +87,7 @@ print("Deploy the model")
 
 service = Model.deploy(workspace=ws,
                         name=aks_service_name,
-                        models=[att_model, large_model, large_severity, feature_names, cat_features],
+                        models=[att_model, large_model, large_severity, model_meta_data],
                         inference_config=inference_config,
                         deployment_config=aks_config,
                         deployment_target=production_cluster                    

@@ -1,10 +1,3 @@
-# import os, json, datetime, sys
-# from operator import attrgetter
-
-# from azureml.core.image import Image
-# from azureml.core.webservice import Webservice
-
-
 import json, datetime, sys
 from azureml.core import Workspace
 from azureml.core.model import Model
@@ -37,17 +30,9 @@ model_meta_data = ws.models["model_meta_data.json"]
 print("Creating Environment")
 conda_dependencies_file_path = "aml_config/conda_dependencies.yml"
 
-# fnol_env_name = "fnol-env"
-# #fnolenv = Environment.get(workspace=ws, name='AzureML-Minimail').clone(fnol_env_name)
-# fnolenv = Environment(name = fnol_env_name)
-# conda_dep = CondaDependencies(conda_dependencies_file_path)
-# fnolenv.python.conda_dependencies=conda_dep
-
 # Combining scoring script and environment
 print("Combining scoring script and environment")
 inference_config = InferenceConfig(entry_script='code/scoring/score.py',
-#                                    source_directory='.',
-#                                    environment=fnolenv,
                                     conda_file=conda_dependencies_file_path
                                     
                                     )
@@ -58,7 +43,7 @@ print("Define deployment configuration")
 
 aci_config = AciWebservice.deploy_configuration(
     cpu_cores=1,
-    memory_gb=1
+    memory_gb=1,
 #    tags={"area": "fnol", "type": "regression"},
 #    description="fnol model",
 )
@@ -84,7 +69,6 @@ print(
     )
 )
 
-# service=Webservice(name ='aciws0622', workspace =ws)
 # Writing the ACI details to /aml_config/aci_webservice.json
 aci_webservice = {}
 aci_webservice["aci_name"] = service.name
