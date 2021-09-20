@@ -38,7 +38,7 @@ dependencies:
 
   # get a prebuilt version and not require build tools for the install.
 
-- psutil=5.3
+#- psutil=5.3
 - pip
 
 - pip:
