@@ -32,7 +32,8 @@ conda_dependencies_file_path = "aml_config/conda_dependencies.yml"
 
 # Combining scoring script and environment
 print("Combining scoring script and environment")
-inference_config = InferenceConfig(entry_script='code/scoring/score.py',
+inference_config = InferenceConfig(runtime= "python",
+                                   entry_script='code/scoring/score.py',
                                     conda_file=conda_dependencies_file_path
                                     
                                     )
