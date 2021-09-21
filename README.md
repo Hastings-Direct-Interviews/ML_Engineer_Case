@@ -20,7 +20,7 @@ or discussing other aspects that could be useful for a fully fledged ML Ops solu
 
 ### Tips
 •	Please use Python 3.7 in your production environment as this is what the service has been tested with. <br>
-•	Please start the task early as you will likely need to put in a request to Azure for free parallel jobs.  This request will take three working days to complete.
+•	Please start the task early as you will likely need to put in a request to Azure for free parallel jobs.  This request will take three working days to complete. <br>
 • While preferred, Azure services are not required for this task. If you are more familiar with a competing cloud service provider, completing this task in that stack is acceptable. <br>
 • Please feel free to reach out to your recruiter with questions about the case. The team behind this case will deicde if it's "giving away too much" or fair to answer.
 
